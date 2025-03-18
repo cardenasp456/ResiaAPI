@@ -1,0 +1,40 @@
+{
+    "surveys": [
+      {
+        "student_id": 1,
+        "perception": {
+          "difficulty": "Alta",
+          "enjoyment": "Media",
+          "engagement": "Baja",
+          "topics_of_interest": ["Geometría", "Estadística"]
+        }
+      },
+      {
+        "student_id": 2,
+        "perception": {
+          "difficulty": "Media",
+          "enjoyment": "Alta",
+          "engagement": "Alta",
+          "topics_of_interest": ["Álgebra", "Estadística"]
+        }
+      },
+      {
+        "student_id": 3,
+        "perception": {
+          "difficulty": "Baja",
+          "enjoyment": "Baja",
+          "engagement": "Media",
+          "topics_of_interest": ["Álgebra", "Estadística"]
+        }
+      },
+      {
+        "student_id": 4,
+        "perception": {
+          "difficulty": "Alta",
+          "enjoyment": "Baja",
+          "engagement": "Baja",
+          "topics_of_interest": ["Geometría"]
+        }
+      }
+    ]
+  }

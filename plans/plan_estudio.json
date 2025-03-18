@@ -1,0 +1,126 @@
+{
+    "course_name": "Matemáticas para Secundaria",
+    "grade_level": "10",
+    "units": [
+      {
+        "unit_name": "Álgebra",
+        "objectives": [
+          "Entender y aplicar ecuaciones lineales",
+          "Resolver sistemas de ecuaciones",
+          "Trabajar con expresiones algebraicas"
+        ],
+        "topics": [
+          {
+            "topic_name": "Ecuaciones Lineales",
+            "content": [
+              "Definición de ecuaciones lineales",
+              "Resolución de ecuaciones simples",
+              "Ecuaciones con dos incógnitas"
+            ],
+            "assessment_methods": [
+              "Examen de ecuaciones lineales",
+              "Problemas de práctica en clase"
+            ]
+          },
+          {
+            "topic_name": "Sistemas de Ecuaciones",
+            "content": [
+              "Método de sustitución",
+              "Método de igualación",
+              "Método gráfico"
+            ],
+            "assessment_methods": [
+              "Examen de sistemas de ecuaciones",
+              "Tareas de resolución de problemas"
+            ]
+          }
+        ],
+        "resources": [
+          "Libro de texto de álgebra",
+          "Aplicaciones de álgebra en línea"
+        ]
+      },
+      {
+        "unit_name": "Geometría",
+        "objectives": [
+          "Comprender las propiedades de las figuras geométricas",
+          "Aplicar teoremas de geometría en problemas",
+          "Calcular áreas y perímetros"
+        ],
+        "topics": [
+          {
+            "topic_name": "Figuras Geométricas",
+            "content": [
+              "Propiedades de triángulos",
+              "Propiedades de cuadriláteros",
+              "Propiedades de círculos"
+            ],
+            "assessment_methods": [
+              "Proyecto de construcción de figuras geométricas",
+              "Examen de propiedades geométricas"
+            ]
+          },
+          {
+            "topic_name": "Teoremas de Geometría",
+            "content": [
+              "Teorema de Pitágoras",
+              "Teorema de Tales",
+              "Teorema de los ángulos interiores"
+            ],
+            "assessment_methods": [
+              "Examen de teoremas de geometría",
+              "Resolución de problemas con teoremas"
+            ]
+          }
+        ],
+        "resources": [
+          "Libro de texto de geometría",
+          "Herramientas de dibujo geométrico"
+        ]
+      },
+      {
+        "unit_name": "Estadística",
+        "objectives": [
+          "Entender los conceptos básicos de estadística",
+          "Aplicar medidas de tendencia central",
+          "Interpretar gráficos y tablas estadísticas"
+        ],
+        "topics": [
+          {
+            "topic_name": "Medidas de Tendencia Central",
+            "content": [
+              "Media, mediana y moda",
+              "Distribución de frecuencias",
+              "Interpretación de datos"
+            ],
+            "assessment_methods": [
+              "Examen de medidas de tendencia central",
+              "Proyecto de análisis estadístico"
+            ]
+          },
+          {
+            "topic_name": "Gráficos y Tablas",
+            "content": [
+              "Gráficos de barras",
+              "Gráficos circulares",
+              "Histogramas"
+            ],
+            "assessment_methods": [
+              "Tareas de interpretación de gráficos",
+              "Examen de representación gráfica"
+            ]
+          }
+        ],
+        "resources": [
+          "Software de análisis estadístico",
+          "Hojas de cálculo"
+        ]
+      }
+    ],
+    "evaluation": {
+      "exams": "40%",
+      "projects": "30%",
+      "classwork": "20%",
+      "participation": "10%"
+    }
+  }
