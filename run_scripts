@@ -13,15 +13,23 @@
 --('Matemáticas', 'Alta', 'Media', 'Baja', '[\"Geometría\", \"Estadística\"]', 'Me gustaría que se usaran más ejemplos prácticos y aplicaciones en la vida real.'),
 --('Física', 'Media', 'Alta', 'Alta', '[\"Álgebra\", \"Estadística\"]', 'Me encantan los desafíos algebraicos, pero siento que las clases de geometría son aburridas.');
 
---CREATE TABLE SurveySummary (
---    summary_id INT PRIMARY KEY IDENTITY(1,1), -- Auto incrementa desde 1
---    most_interesting_topics NVARCHAR(MAX), -- Usamos NVARCHAR(MAX) para almacenar temas de interés más relevantes
---    least_interesting_topics NVARCHAR(MAX), -- Usamos NVARCHAR(MAX) para almacenar temas menos relevantes
---    average_difficulty NVARCHAR(50),
---    average_enjoyment NVARCHAR(50),
---    average_engagement NVARCHAR(50)
---);
+CREATE TABLE SurveySummary (
+    summary_id INT PRIMARY KEY IDENTITY(1,1), -- Auto incrementa desde 1
+	class NVARCHAR(50),
+    most_interesting_topics NVARCHAR(MAX), -- Usamos NVARCHAR(MAX) para almacenar temas de interés más relevantes
+    least_interesting_topics NVARCHAR(MAX), -- Usamos NVARCHAR(MAX) para almacenar temas menos relevantes
+    average_difficulty NVARCHAR(50),
+    average_enjoyment NVARCHAR(50),
+    average_engagement NVARCHAR(50)
+);
 
---INSERT INTO SurveySummary (most_interesting_topics, least_interesting_topics, average_difficulty, average_enjoyment, average_engagement)
---VALUES
---('[\"Estadística\", \"Álgebra\"]', '[\"Geometría\"]', 'Media', 'Media', 'Media');
+INSERT INTO SurveySummary (class, most_interesting_topics, least_interesting_topics, average_difficulty, average_enjoyment, average_engagement)
+VALUES 
+(
+    'Matemáticas',  -- Nombre de la clase
+    '["Álgebra", "Estadística"]',  -- Temas más interesantes (en formato JSON como cadena)
+    '["Geometría"]',  -- Temas menos interesantes (en formato JSON como cadena)
+    'Media',  -- Dificultad promedio
+    'Alta',  -- Disfrute promedio
+    'Media'  -- Participación promedio
+);

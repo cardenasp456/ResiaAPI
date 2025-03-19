@@ -30,3 +30,30 @@ def modificar_plan(plan_estudio, encuestas, subject, search):
     except requests.exceptions.RequestException as e:
         print(f"Error en la solicitud: {e}")
         return None
+
+
+def survey_summary_calculation(self, surveys_data):
+    surveys_data_str = json.dumps(surveys_data, separators=(',', ':'))
+    payload = {
+        "model": "llama3.2",
+        "messages": [
+            {"role": "assistant", "content": "Eres un experto en análisis de datos. Calcula los promedios de dificultad, disfrute y participación, y determina los temas más y menos interesantes para la clase."},
+            {"role": "user", "content": f"{surveys_data_str}"}  # Envía los datos de las encuestas
+        ],
+        "format": "json",
+        "stream": False,
+        "options": {
+            "temperature": 0.7  
+        }
+    }
+
+    try:
+        response = requests.post("http://localhost:11434/api/chat", json=payload)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"Error en la solicitud a Ollama: {response.status_code}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error en la solicitud: {e}")
+        return None
