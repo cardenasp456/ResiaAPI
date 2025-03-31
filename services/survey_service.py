@@ -10,68 +10,83 @@ class SurveyService:
         # Inicialización del servicio
         pass
 
-    def insert_survey(self, class_name, difficulty, enjoyment, engagement, topics_of_interest, comments):
-        new_survey = Survey(
-            class_name=class_name,
-            difficulty=difficulty,
-            enjoyment=enjoyment,
-            engagement=engagement,
-            topics_of_interest=topics_of_interest,
-            comments=comments
-        )
-        db.session.add(new_survey)
-        db.session.commit()
-        return new_survey
+    def insert_survey(self, student_name, subject, answers):
+         # Buscar si ya existe un registro con el mismo student_name y subject
+        existing_survey = Survey.query.filter_by(student_name=student_name, subject=subject).first()
+
+        if existing_survey:
+            # Si existe, actualizar los valores
+            existing_survey.answers = json.dumps(answers)  # Actualizar las respuestas
+            db.session.commit()
+            return existing_survey
+        else:
+            # Si no existe, crear un nuevo registro
+            new_survey = Survey(
+                student_name=student_name,
+                subject=subject,
+                answers=json.dumps(answers)  # Convertir las respuestas a formato JSON si es necesario
+            )
+            db.session.add(new_survey)
+            db.session.commit()
+            return new_survey
     
     def get_all_surveys(self):
         return Survey.query.all()
     
     
     def calculate_and_update_summary(self, class_name):
-        # Obtener todas las encuestas para la clase especificada
-        surveys = Survey.query.filter_by(class_name=class_name).all()
-        
+        # Obtener todas las encuestas con el mismo subject
+        surveys = Survey.query.filter_by(subject=class_name).all()
+
         if not surveys:
-            print(f"No se encontraron encuestas para la clase: {class_name}")
-            return None
+            return None  # Si no hay encuestas, devolver None
 
-        # Preparar los datos de las encuestas para enviarlos a Ollama
-        surveys_data = [survey.to_dict() for survey in surveys]
-        
-        # Imprimir las encuestas procesadas
-        print("Datos de las encuestas:", json.dumps(surveys_data, indent=4))
+        # Inicializar una lista para acumular las respuestas por índice
+        aggregated_answers = []
 
-        # Llamar a SurveySummaryCalculation en el servicio de Ollama
-        result = self.survey_summary_calculation(surveys_data)
-        if result:
-            # Procesar la respuesta de Ollama
-            most_interesting_topics = result.get('most_interesting_topics', [])
-            least_interesting_topics = result.get('least_interesting_topics', [])
-            average_difficulty = result.get('average_difficulty', 'Desconocida')
-            average_enjoyment = result.get('average_enjoyment', 'Desconocida')
-            average_engagement = result.get('average_engagement', 'Desconocida')
+        for survey in surveys:
+            try:
+                # Cargar las respuestas desde el campo JSON
+                answers = json.loads(survey.answers)
+                # Expandir la lista de respuestas acumuladas si es necesario
+                while len(aggregated_answers) < len(answers):
+                    aggregated_answers.append([])
 
-            # Actualizar o insertar en SurveySummary
-            summary = SurveySummary.query.filter_by(class_name=class_name).first()
-            if summary:
-                summary.most_interesting_topics = json.dumps(most_interesting_topics)
-                summary.least_interesting_topics = json.dumps(least_interesting_topics)
-                summary.average_difficulty = average_difficulty
-                summary.average_enjoyment = average_enjoyment
-                summary.average_engagement = average_engagement
+                # Agregar cada respuesta al índice correspondiente
+                for i, answer in enumerate(answers):
+                    aggregated_answers[i].append(answer)
+            except json.JSONDecodeError:
+                continue  # Ignorar encuestas con datos inválidos
+
+        # Calcular el promedio por índice
+        averages = []
+        for index_answers in aggregated_answers:
+            if index_answers:  # Verificar que haya respuestas en este índice
+                averages.append(round(sum(index_answers) / len(index_answers), 2))
             else:
-                summary = SurveySummary(
-                    class_name=class_name,
-                    most_interesting_topics=json.dumps(most_interesting_topics),
-                    least_interesting_topics=json.dumps(least_interesting_topics),
-                    average_difficulty=average_difficulty,
-                    average_enjoyment=average_enjoyment,
-                    average_engagement=average_engagement
-                )
-                db.session.add(summary)
+                averages.append(None)  # Si no hay respuestas, agregar None
 
-            db.session.commit()
-            return summary
+        # Calcular el promedio por índice
+        averages = []
+        for index_answers in aggregated_answers:
+            if index_answers:  # Verificar que haya respuestas en este índice
+                averages.append(round(sum(index_answers) / len(index_answers), 2))
+            else:
+                averages.append(None)  # Si no hay respuestas, agregar None
+
+        # Guardar los datos en SurveySummary
+        summary = SurveySummary.query.filter_by(subject=class_name).first()
+        if summary:
+            # Actualizar el registro existente
+            summary.answers = json.dumps(averages)  # Guardar los promedios como JSON
         else:
-            print("Error al procesar la respuesta de Ollama.")
-            return None
+            # Crear un nuevo registro
+            summary = SurveySummary(
+                subject=class_name,
+                answers=json.dumps(averages)  # Guardar los promedios como JSON
+            )
+            db.session.add(summary)
+
+        db.session.commit()  # Confirmar los cambios en la base de datos
+
+        return averages

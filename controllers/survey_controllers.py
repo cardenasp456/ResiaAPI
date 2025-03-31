@@ -9,34 +9,28 @@ survey_service = SurveyService()
 
 @survey_blueprint.route('/survey', methods=['POST'])
 def create_survey():
-    # Obtener los datos del cuerpo de la solicitud
+     # Obtener los datos del cuerpo de la solicitud
     data = request.get_json()
 
-    class_name = data.get('class_name')
-    difficulty = data.get('difficulty')
-    enjoyment = data.get('enjoyment')
-    engagement = data.get('engagement')
-    topics_of_interest = data.get('topics_of_interest')
-    comments = data.get('comments')
+    student_name = data.get('studentName')
+    subject = data.get('subject')
+    answers = data.get('answers')
 
     # Validar datos recibidos
-    if not class_name or not difficulty or not enjoyment or not engagement or not topics_of_interest:
+    if not student_name or not subject or not answers:
         return jsonify({"message": "Todos los campos son requeridos"}), 400
 
     # Insertar la encuesta utilizando el servicio
     new_survey = survey_service.insert_survey(
-        class_name,
-        difficulty,
-        enjoyment,
-        engagement,
-        topics_of_interest,
-        comments
+        student_name,
+        subject,
+        answers
     )
 
     if new_survey:
         # Calcular y actualizar el resumen
-        # summary = survey_service.calculate_and_update_summary(class_name)
-
+        summary = survey_service.calculate_and_update_summary(subject)
+        print(summary)
         # Si la encuesta se insertó correctamente, devolver la respuesta
         return jsonify({
             "message": "Encuesta creada exitosamente"
