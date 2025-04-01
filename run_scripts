@@ -10,3 +10,167 @@ CREATE TABLE SurveySummary (
     subject NVARCHAR(100),
     answers NVARCHAR(MAX)
 );
+
+CREATE TABLE courses (
+    course_id INT IDENTITY(1,1) PRIMARY KEY,
+    course_name VARCHAR(255),
+    grade_level VARCHAR(50)
+);
+
+CREATE TABLE units (
+    unit_id INT IDENTITY(1,1) PRIMARY KEY,
+    course_id INT,
+    unit_name VARCHAR(255),
+    FOREIGN KEY (course_id) REFERENCES courses(course_id)
+);
+
+CREATE TABLE unit_objectives (
+    objective_id INT IDENTITY(1,1) PRIMARY KEY,
+    unit_id INT,
+    objective_text TEXT,
+    FOREIGN KEY (unit_id) REFERENCES units(unit_id)
+);
+
+CREATE TABLE topics (
+    topic_id INT IDENTITY(1,1) PRIMARY KEY,
+    unit_id INT,
+    topic_name VARCHAR(255),
+    FOREIGN KEY (unit_id) REFERENCES units(unit_id)
+);
+
+CREATE TABLE topic_content (
+    content_id INT IDENTITY(1,1) PRIMARY KEY,
+    topic_id INT,
+    content_text TEXT,
+    FOREIGN KEY (topic_id) REFERENCES topics(topic_id)
+);
+
+CREATE TABLE topic_assessments (
+    assessment_id INT IDENTITY(1,1) PRIMARY KEY,
+    topic_id INT,
+    assessment_method VARCHAR(255),
+    FOREIGN KEY (topic_id) REFERENCES topics(topic_id)
+);
+
+CREATE TABLE unit_resources (
+    resource_id INT IDENTITY(1,1) PRIMARY KEY,
+    unit_id INT,
+    resource_name VARCHAR(255),
+    FOREIGN KEY (unit_id) REFERENCES units(unit_id)
+);
+
+CREATE TABLE evaluation (
+    evaluation_id INT IDENTITY(1,1) PRIMARY KEY,
+    course_id INT,
+    exams VARCHAR(50),
+    projects VARCHAR(50),
+    classwork VARCHAR(50),
+    participation VARCHAR(50),
+    FOREIGN KEY (course_id) REFERENCES courses(course_id)
+);
+
+-- Insertar curso "Español" de grado 7
+INSERT INTO courses (course_name, grade_level)
+VALUES ('Español', '7');
+
+-- Insertar unidad "Lectura y comprensión"
+INSERT INTO units (course_id, unit_name)
+VALUES (SCOPE_IDENTITY(), 'Lectura y comprensión');
+
+-- Insertar objetivos para la unidad "Lectura y comprensión"
+INSERT INTO unit_objectives (unit_id, objective_text)
+VALUES (SCOPE_IDENTITY(), 'Desarrollar habilidades de lectura crítica'),
+       (SCOPE_IDENTITY(), 'Identificar ideas principales y detalles de un texto'),
+       (SCOPE_IDENTITY(), 'Analizar textos literarios y no literarios');
+
+-- Insertar temas de "Lectura y comprensión"
+INSERT INTO topics (unit_id, topic_name)
+VALUES (SCOPE_IDENTITY(), 'Análisis de textos narrativos'),
+       (SCOPE_IDENTITY(), 'Análisis de textos expositivos');
+
+-- Insertar contenido para el tema "Análisis de textos narrativos"
+INSERT INTO topic_content (topic_id, content_text)
+VALUES (SCOPE_IDENTITY(), 'Identificación de los elementos narrativos'),
+       (SCOPE_IDENTITY(), 'Análisis de personajes y conflictos'),
+       (SCOPE_IDENTITY(), 'Interpretación de la estructura narrativa');
+
+-- Insertar métodos de evaluación para "Análisis de textos narrativos"
+INSERT INTO topic_assessments (topic_id, assessment_method)
+VALUES (SCOPE_IDENTITY(), 'Ensayo sobre el análisis de un texto narrativo'),
+       (SCOPE_IDENTITY(), 'Examen de comprensión lectora');
+
+-- Insertar recursos para la unidad "Lectura y comprensión"
+INSERT INTO unit_resources (unit_id, resource_name)
+VALUES (SCOPE_IDENTITY(), 'Antología literaria de textos narrativos'),
+       (SCOPE_IDENTITY(), 'Plataforma de lectura digital');
+
+-- Insertar unidad "Gramática y sintaxis"
+INSERT INTO units (course_id, unit_name)
+VALUES (SCOPE_IDENTITY(), 'Gramática y sintaxis');
+
+-- Insertar objetivos para la unidad "Gramática y sintaxis"
+INSERT INTO unit_objectives (unit_id, objective_text)
+VALUES (SCOPE_IDENTITY(), 'Aplicar correctamente las reglas gramaticales'),
+       (SCOPE_IDENTITY(), 'Construir oraciones completas y coherentes'),
+       (SCOPE_IDENTITY(), 'Comprender la función de cada parte de la oración');
+
+-- Insertar temas de "Gramática y sintaxis"
+INSERT INTO topics (unit_id, topic_name)
+VALUES (SCOPE_IDENTITY(), 'Estructura de oraciones'),
+       (SCOPE_IDENTITY(), 'Uso adecuado de los tiempos verbales');
+
+-- Insertar contenido para el tema "Estructura de oraciones"
+INSERT INTO topic_content (topic_id, content_text)
+VALUES (SCOPE_IDENTITY(), 'Identificación de sujeto y predicado'),
+       (SCOPE_IDENTITY(), 'Construcción de oraciones simples y complejas');
+
+-- Insertar métodos de evaluación para "Estructura de oraciones"
+INSERT INTO topic_assessments (topic_id, assessment_method)
+VALUES (SCOPE_IDENTITY(), 'Ejercicios de identificación de oraciones'),
+       (SCOPE_IDENTITY(), 'Prueba escrita de estructura de oraciones');
+
+-- Insertar recursos para la unidad "Gramática y sintaxis"
+INSERT INTO unit_resources (unit_id, resource_name)
+VALUES (SCOPE_IDENTITY(), 'Libro de gramática'),
+       (SCOPE_IDENTITY(), 'Aplicaciones de gramática en línea');
+
+-- Insertar evaluación final para el curso "Español"
+INSERT INTO evaluation (course_id, exams, projects, classwork, participation)
+VALUES (SCOPE_IDENTITY(), '40%', '30%', '20%', '10%');
+
+
+
+-- Insertar curso "Español" de grado 7
+
+INSERT INTO courses (course_name, grade_level) VALUES ('Español', '7');
+DECLARE @course_id INT = SCOPE_IDENTITY();
+
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Lectura y comprensión');
+DECLARE @unit_id_lectura INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES (@unit_id_lectura, 'Desarrollar habilidades de lectura crítica'), (@unit_id_lectura, 'Identificar ideas principales y detalles de un texto'), (@unit_id_lectura, 'Analizar textos literarios y no literarios');
+
+INSERT INTO topics (unit_id, topic_name) VALUES (@unit_id_lectura, 'Análisis de textos narrativos'), (@unit_id_lectura, 'Análisis de textos expositivos');
+DECLARE @topic_id_lectura INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES (@topic_id_lectura, 'Identificación de los elementos narrativos'), (@topic_id_lectura, 'Análisis de personajes y conflictos'), (@topic_id_lectura, 'Interpretación de la estructura narrativa');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES (@topic_id_lectura, 'Ensayo sobre el análisis de un texto narrativo'), (@topic_id_lectura, 'Examen de comprensión lectora');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES (@unit_id_lectura, 'Antología literaria de textos narrativos'), (@unit_id_lectura, 'Plataforma de lectura digital');
+
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Gramática y sintaxis');
+DECLARE @unit_id_gramatica INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES (@unit_id_gramatica, 'Aplicar correctamente las reglas gramaticales'), (@unit_id_gramatica, 'Construir oraciones completas y coherentes'), (@unit_id_gramatica, 'Comprender la función de cada parte de la oración');
+
+INSERT INTO topics (unit_id, topic_name) VALUES (@unit_id_gramatica, 'Estructura de oraciones'), (@unit_id_gramatica, 'Uso adecuado de los tiempos verbales');
+DECLARE @topic_id_gramatica INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES (@topic_id_gramatica, 'Identificación de sujeto y predicado'), (@topic_id_gramatica, 'Construcción de oraciones simples y complejas');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES (@topic_id_gramatica, 'Ejercicios de identificación de oraciones'), (@topic_id_gramatica, 'Prueba escrita de estructura de oraciones');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES (@unit_id_gramatica, 'Libro de gramática'), (@unit_id_gramatica, 'Aplicaciones de gramática en línea');
+
+INSERT INTO evaluation (course_id, exams, projects, classwork, participation) VALUES (@course_id, '40%', '30%', '20%', '10%');

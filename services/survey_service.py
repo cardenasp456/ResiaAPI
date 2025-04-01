@@ -90,3 +90,14 @@ class SurveyService:
         db.session.commit()  # Confirmar los cambios en la base de datos
 
         return averages
+
+
+    def delete_survey_by_id(self, survey_id):
+        survey = Survey.query.filter_by(summary_id=survey_id).first()
+
+        if not survey:
+            return False  
+        
+        db.session.delete(survey)
+        db.session.commit()
+        return True  

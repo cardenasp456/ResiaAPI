@@ -37,3 +37,25 @@ def create_survey():
         }), 201
     else:
         return jsonify({"message": "Error al crear la encuesta"}), 500
+    
+
+@survey_blueprint.route('/surveys', methods=['GET'])
+def get_surveys():
+    surveys = survey_service.get_all_surveys()
+    return jsonify([survey.to_dict() for survey in surveys]), 200
+
+
+@survey_blueprint.route('/deleteSurvey', methods=['POST'])
+def delete_survey():
+    data = request.get_json()
+
+    subject = data.get('subject')
+    survey_id = data.get('summary_id')
+
+    success = survey_service.delete_survey_by_id(survey_id)
+    if success:
+        summary = survey_service.calculate_and_update_summary(subject)
+        print(summary)
+        return jsonify({"message": "Encuesta eliminada exitosamente"}), 200
+    else:
+        return jsonify({"message": "Encuesta no encontrada"}), 404

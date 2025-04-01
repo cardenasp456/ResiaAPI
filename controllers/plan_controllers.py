@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from services.llama_service import modificar_plan
 from models.plans_model import PlanModel
 from models.encuestas_model import EncuestasModel
+from services.curriculum_service import CurriculumService
 
 # Definir un blueprint para los controladores de los planes de estudio
 plan_blueprint = Blueprint('plan_blueprint', __name__)
@@ -34,3 +35,21 @@ def modificar_plan_controller():
         return jsonify(respuesta_llama)
     else:
         return jsonify({"error": "No se pudo modificar el plan con Llama"}), 500
+    
+
+@plan_blueprint.route('/curriculum', methods=['GET'])
+def get_curriculum():
+    course_name = request.args.get('course_name')
+    grade_level = request.args.get('grade_level')
+
+    print(course_name, grade_level)
+
+    if not course_name or not grade_level:
+        return jsonify({"message": "Se requieren los parámetros 'course_name' y 'grade_level'"}), 400
+
+    curriculum_service = CurriculumService()
+    curriculum = curriculum_service.get_curriculum(course_name, grade_level)
+    if curriculum:
+        return jsonify(curriculum), 200
+    else:
+        return jsonify({"message": "No se encontró el plan de estudio"}), 404
