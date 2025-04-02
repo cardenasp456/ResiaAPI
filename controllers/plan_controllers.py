@@ -53,3 +53,25 @@ def get_curriculum():
         return jsonify(curriculum), 200
     else:
         return jsonify({"message": "No se encontró el plan de estudio"}), 404
+    
+@plan_blueprint.route('/editCurriculum', methods=['POST'])
+def edit_curriculum():
+    # Obtener los datos del cuerpo de la solicitud
+    data = request.get_json()
+    
+    # Validar que los parámetros requeridos estén presentes
+    course_name = data.get('course_name')
+    grade_level = data.get('grade_level')
+    updated_data = data.get('updated_data')
+
+    if not course_name or not grade_level or not updated_data:
+        return jsonify({"message": "Se requieren los parámetros 'course_name', 'grade_level' y 'updated_data'"}), 400
+
+    # Instanciar el servicio de curriculum
+    curriculum_service = CurriculumService()
+
+    # Llamar al método para editar el curriculum
+    response, status_code = curriculum_service.edit_curriculum(course_name, grade_level, updated_data)
+
+    # Devolver la respuesta
+    return jsonify(response), status_code

@@ -174,3 +174,385 @@ INSERT INTO topic_assessments (topic_id, assessment_method) VALUES (@topic_id_gr
 INSERT INTO unit_resources (unit_id, resource_name) VALUES (@unit_id_gramatica, 'Libro de gramática'), (@unit_id_gramatica, 'Aplicaciones de gramática en línea');
 
 INSERT INTO evaluation (course_id, exams, projects, classwork, participation) VALUES (@course_id, '40%', '30%', '20%', '10%');
+
+
+-- Insertar curso "Matemáticas" de grado 7
+
+INSERT INTO courses (course_name, grade_level) VALUES ('Matemáticas', '7');
+DECLARE @course_id INT = SCOPE_IDENTITY();
+
+-- Unidad 1: Números y operaciones
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Números y operaciones');
+DECLARE @unit_id_numeros INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_numeros, 'Comprender y aplicar operaciones con números enteros'),
+(@unit_id_numeros, 'Resolver problemas utilizando fracciones y decimales'),
+(@unit_id_numeros, 'Interpretar el valor posicional y la notación científica');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_numeros, 'Operaciones con números enteros'),
+(@unit_id_numeros, 'Fracciones y decimales');
+DECLARE @topic_id_numeros INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_numeros, 'Suma, resta, multiplicación y división de enteros'),
+(@topic_id_numeros, 'Conversión entre fracciones y decimales'),
+(@topic_id_numeros, 'Problemas contextualizados con fracciones');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_numeros, 'Prueba escrita de operaciones'),
+(@topic_id_numeros, 'Ejercicios prácticos con problemas del mundo real');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_numeros, 'Libro de Matemáticas 7° grado'),
+(@unit_id_numeros, 'Plataforma de ejercicios interactivos');
+
+-- Unidad 2: Geometría básica
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Geometría básica');
+DECLARE @unit_id_geometria INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_geometria, 'Identificar y clasificar figuras geométricas'),
+(@unit_id_geometria, 'Calcular perímetro, área y volumen de figuras básicas'),
+(@unit_id_geometria, 'Aplicar conceptos geométricos en la resolución de problemas');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_geometria, 'Figuras planas y sus propiedades'),
+(@unit_id_geometria, 'Volumen de cuerpos geométricos');
+DECLARE @topic_id_geometria INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_geometria, 'Clasificación de triángulos y cuadriláteros'),
+(@topic_id_geometria, 'Fórmulas de área y perímetro'),
+(@topic_id_geometria, 'Cálculo del volumen de prismas y cilindros');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_geometria, 'Ejercicios prácticos de cálculo de áreas'),
+(@topic_id_geometria, 'Proyecto de construcción de figuras geométricas');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_geometria, 'Kit de geometría'),
+(@unit_id_geometria, 'Videos explicativos de Khan Academy');
+
+-- Evaluación general del curso
+INSERT INTO evaluation (course_id, exams, projects, classwork, participation) 
+VALUES (@course_id, '35%', '25%', '25%', '15%');
+
+-- Insertar curso "Sociales" de grado 7
+
+INSERT INTO courses (course_name, grade_level) VALUES ('Sociales', '7');
+DECLARE @course_id INT = SCOPE_IDENTITY();
+
+-- Unidad 1: Geografía de América Latina
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Geografía de América Latina');
+DECLARE @unit_id_geo INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_geo, 'Identificar las características físicas y políticas de América Latina'),
+(@unit_id_geo, 'Analizar la influencia del entorno geográfico en las actividades humanas'),
+(@unit_id_geo, 'Ubicar los principales países y accidentes geográficos del continente');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_geo, 'Regiones naturales y clima'),
+(@unit_id_geo, 'Organización política y fronteras');
+DECLARE @topic_id_geo INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_geo, 'Cordilleras, ríos y zonas climáticas principales'),
+(@topic_id_geo, 'Mapa político de América Latina'),
+(@topic_id_geo, 'Impacto del relieve en las actividades económicas');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_geo, 'Mapa interactivo de localización de países y ríos'),
+(@topic_id_geo, 'Ensayo sobre la relación entre geografía y economía');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_geo, 'Atlas escolar'),
+(@unit_id_geo, 'Mapas digitales interactivos');
+
+-- Unidad 2: Civilizaciones precolombinas
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Civilizaciones precolombinas');
+DECLARE @unit_id_hist INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_hist, 'Conocer las principales características de las civilizaciones precolombinas'),
+(@unit_id_hist, 'Valorar los aportes culturales de mayas, aztecas e incas'),
+(@unit_id_hist, 'Comprender los procesos históricos previos a la colonización');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_hist, 'Mayas, aztecas e incas'),
+(@unit_id_hist, 'Organización social, política y económica');
+DECLARE @topic_id_hist INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_hist, 'Ubicación geográfica y logros culturales'),
+(@topic_id_hist, 'Estructura social y formas de gobierno'),
+(@topic_id_hist, 'Economía y actividades productivas');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_hist, 'Línea de tiempo de civilizaciones'),
+(@topic_id_hist, 'Presentación sobre aportes culturales');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_hist, 'Documentales históricos'),
+(@unit_id_hist, 'Lecturas ilustradas sobre culturas precolombinas');
+
+-- Evaluación general del curso
+INSERT INTO evaluation (course_id, exams, projects, classwork, participation) 
+VALUES (@course_id, '30%', '30%', '25%', '15%');
+
+-- Insertar curso "Ciencias Naturales" de grado 7
+
+INSERT INTO courses (course_name, grade_level) VALUES ('Naturales', '7');
+DECLARE @course_id INT = SCOPE_IDENTITY();
+
+-- Unidad 1: Estructura y función de los seres vivos
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Estructura y función de los seres vivos');
+DECLARE @unit_id_biologia INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_biologia, 'Comprender la estructura celular y su función en los organismos'),
+(@unit_id_biologia, 'Identificar los niveles de organización biológica'),
+(@unit_id_biologia, 'Relacionar sistemas del cuerpo humano con sus funciones vitales');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_biologia, 'La célula y su estructura'),
+(@unit_id_biologia, 'Sistemas del cuerpo humano');
+DECLARE @topic_id_biologia INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_biologia, 'Partes de la célula y funciones'),
+(@topic_id_biologia, 'Diferencias entre célula animal y vegetal'),
+(@topic_id_biologia, 'Sistema circulatorio, respiratorio y digestivo');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_biologia, 'Examen sobre estructura celular'),
+(@topic_id_biologia, 'Infografía sobre los sistemas del cuerpo humano');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_biologia, 'Microscopios y láminas celulares'),
+(@unit_id_biologia, 'Videos educativos sobre biología humana');
+
+-- Unidad 2: La materia y sus transformaciones
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'La materia y sus transformaciones');
+DECLARE @unit_id_quimica INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_quimica, 'Identificar los estados y propiedades de la materia'),
+(@unit_id_quimica, 'Distinguir entre cambios físicos y químicos'),
+(@unit_id_quimica, 'Observar y describir reacciones químicas simples');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_quimica, 'Estados y propiedades de la materia'),
+(@unit_id_quimica, 'Cambios físicos y químicos');
+DECLARE @topic_id_quimica INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_quimica, 'Sólido, líquido y gaseoso'),
+(@topic_id_quimica, 'Propiedades extensivas e intensivas'),
+(@topic_id_quimica, 'Ejemplos de reacciones químicas simples');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_quimica, 'Práctica de laboratorio sobre cambios de estado'),
+(@topic_id_quimica, 'Cuestionario sobre tipos de reacciones');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_quimica, 'Material de laboratorio básico'),
+(@unit_id_quimica, 'Simuladores de reacciones químicas');
+
+-- Evaluación general del curso
+INSERT INTO evaluation (course_id, exams, projects, classwork, participation) 
+VALUES (@course_id, '40%', '25%', '25%', '10%');
+
+
+-- Insertar curso "Artes" de grado 7
+
+INSERT INTO courses (course_name, grade_level) VALUES ('Artes', '7');
+DECLARE @course_id INT = SCOPE_IDENTITY();
+
+-- Unidad 1: Expresión plástica y visual
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Expresión plástica y visual');
+DECLARE @unit_id_visual INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_visual, 'Explorar técnicas básicas de dibujo y pintura'),
+(@unit_id_visual, 'Desarrollar la creatividad a través de composiciones visuales'),
+(@unit_id_visual, 'Identificar elementos del lenguaje visual como línea, forma y color');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_visual, 'Técnicas de dibujo y pintura'),
+(@unit_id_visual, 'Elementos del lenguaje visual');
+DECLARE @topic_id_visual INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_visual, 'Uso de lápices, carboncillo, acuarela y témpera'),
+(@topic_id_visual, 'Aplicación de la teoría del color'),
+(@topic_id_visual, 'Composición, equilibrio y perspectiva en obras visuales');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_visual, 'Portafolio de dibujos y pinturas'),
+(@topic_id_visual, 'Evaluación de bocetos aplicando teoría visual');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_visual, 'Material de arte (lápices, colores, pinceles)'),
+(@unit_id_visual, 'Guías ilustradas de técnicas plásticas');
+
+-- Unidad 2: Apreciación musical
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Apreciación musical');
+DECLARE @unit_id_musica INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_musica, 'Reconocer diferentes géneros musicales'),
+(@unit_id_musica, 'Valorar la música como forma de expresión cultural'),
+(@unit_id_musica, 'Identificar elementos básicos del lenguaje musical');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_musica, 'Géneros musicales y su historia'),
+(@unit_id_musica, 'Elementos del lenguaje musical');
+DECLARE @topic_id_musica INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_musica, 'Música clásica, folclórica, popular y contemporánea'),
+(@topic_id_musica, 'Ritmo, melodía, armonía y timbre'),
+(@topic_id_musica, 'Instrumentos musicales y su clasificación');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_musica, 'Ensayo corto sobre un género musical'),
+(@topic_id_musica, 'Actividad de escucha activa con análisis musical');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_musica, 'Reproductor de audio y audífonos'),
+(@unit_id_musica, 'Selección de piezas musicales representativas');
+
+-- Evaluación general del curso
+INSERT INTO evaluation (course_id, exams, projects, classwork, participation) 
+VALUES (@course_id, '20%', '40%', '25%', '15%');
+
+
+-- Insertar curso "Música" de grado 7
+
+INSERT INTO courses (course_name, grade_level) VALUES ('Música', '7');
+DECLARE @course_id INT = SCOPE_IDENTITY();
+
+-- Unidad 1: Fundamentos del lenguaje musical
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Fundamentos del lenguaje musical');
+DECLARE @unit_id_lenguaje_musical INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_lenguaje_musical, 'Identificar los elementos básicos del lenguaje musical'),
+(@unit_id_lenguaje_musical, 'Leer y escribir notación musical simple'),
+(@unit_id_lenguaje_musical, 'Reconocer el ritmo, la melodía y la armonía en piezas musicales');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_lenguaje_musical, 'Notación musical'),
+(@unit_id_lenguaje_musical, 'Elementos del sonido');
+DECLARE @topic_id_lenguaje_musical INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_lenguaje_musical, 'Pentagrama, claves, figuras y silencios'),
+(@topic_id_lenguaje_musical, 'Altura, duración, intensidad y timbre'),
+(@topic_id_lenguaje_musical, 'Lectura rítmica y melódica básica');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_lenguaje_musical, 'Dictados rítmicos y melódicos'),
+(@topic_id_lenguaje_musical, 'Evaluación escrita sobre teoría musical básica');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_lenguaje_musical, 'Cuaderno pentagramado'),
+(@unit_id_lenguaje_musical, 'Software de notación musical básica');
+
+-- Unidad 2: Interpretación y creación musical
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Interpretación y creación musical');
+DECLARE @unit_id_creacion INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_creacion, 'Explorar la interpretación de piezas musicales sencillas'),
+(@unit_id_creacion, 'Estimular la creatividad mediante la composición básica'),
+(@unit_id_creacion, 'Fomentar el trabajo colaborativo a través de ensambles musicales');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_creacion, 'Interpretación vocal e instrumental'),
+(@unit_id_creacion, 'Composición musical básica');
+DECLARE @topic_id_creacion INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_creacion, 'Ejercicios con flauta, percusión menor o teclado'),
+(@topic_id_creacion, 'Improvisación melódica'),
+(@topic_id_creacion, 'Creación de canciones con estructuras simples');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_creacion, 'Presentación en clase de una pieza musical'),
+(@topic_id_creacion, 'Proyecto de composición grupal');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_creacion, 'Instrumentos escolares básicos (flauta, xilófono, teclado)'),
+(@unit_id_creacion, 'Grabadora de audio y recursos digitales');
+
+-- Evaluación general del curso
+INSERT INTO evaluation (course_id, exams, projects, classwork, participation) 
+VALUES (@course_id, '25%', '40%', '20%', '15%');
+
+
+-- Insertar curso "Geometría" de grado 7
+
+INSERT INTO courses (course_name, grade_level) VALUES ('Geometría', '7');
+DECLARE @course_id INT = SCOPE_IDENTITY();
+
+-- Unidad 1: Figuras planas y sus propiedades
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Figuras planas y sus propiedades');
+DECLARE @unit_id_figuras INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_figuras, 'Identificar y clasificar figuras geométricas planas'),
+(@unit_id_figuras, 'Calcular el perímetro y área de figuras planas'),
+(@unit_id_figuras, 'Aplicar conceptos geométricos en la resolución de problemas cotidianos');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_figuras, 'Triángulos y cuadriláteros'),
+(@unit_id_figuras, 'Círculo y figuras compuestas');
+DECLARE @topic_id_figuras INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_figuras, 'Clasificación de triángulos por lados y ángulos'),
+(@topic_id_figuras, 'Propiedades de cuadriláteros'),
+(@topic_id_figuras, 'Fórmulas para perímetro y área');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_figuras, 'Ejercicios de cálculo de áreas'),
+(@topic_id_figuras, 'Diseño de figuras compuestas en papel milimetrado');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_figuras, 'Reglas, compás y transportador'),
+(@unit_id_figuras, 'Plantillas de figuras geométricas');
+
+-- Unidad 2: Relaciones métricas y transformaciones geométricas
+INSERT INTO units (course_id, unit_name) VALUES (@course_id, 'Relaciones métricas y transformaciones geométricas');
+DECLARE @unit_id_transformaciones INT = SCOPE_IDENTITY();
+
+INSERT INTO unit_objectives (unit_id, objective_text) VALUES 
+(@unit_id_transformaciones, 'Explorar simetrías, traslaciones, rotaciones y reflexiones'),
+(@unit_id_transformaciones, 'Aplicar el teorema de Pitágoras en situaciones reales'),
+(@unit_id_transformaciones, 'Resolver problemas con medidas indirectas');
+
+INSERT INTO topics (unit_id, topic_name) VALUES 
+(@unit_id_transformaciones, 'Transformaciones en el plano'),
+(@unit_id_transformaciones, 'Teorema de Pitágoras');
+DECLARE @topic_id_transformaciones INT = SCOPE_IDENTITY();
+
+INSERT INTO topic_content (topic_id, content_text) VALUES 
+(@topic_id_transformaciones, 'Definición y ejemplos de simetría, rotación y traslación'),
+(@topic_id_transformaciones, 'Aplicación del teorema de Pitágoras en el plano cartesiano'),
+(@topic_id_transformaciones, 'Problemas prácticos con triángulos rectángulos');
+
+INSERT INTO topic_assessments (topic_id, assessment_method) VALUES 
+(@topic_id_transformaciones, 'Ejercicios de transformación en papel cuadriculado'),
+(@topic_id_transformaciones, 'Resolución de problemas aplicando Pitágoras');
+
+INSERT INTO unit_resources (unit_id, resource_name) VALUES 
+(@unit_id_transformaciones, 'Geoplano virtual'),
+(@unit_id_transformaciones, 'Software de geometría dinámica');
+
+-- Evaluación general del curso
+INSERT INTO evaluation (course_id, exams, projects, classwork, participation) 
+VALUES (@course_id, '35%', '30%', '25%', '10%');
