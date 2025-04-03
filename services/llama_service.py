@@ -1,9 +1,16 @@
 import requests
 import json
 
-def modificar_plan(plan_estudio, encuestas, subject, search):
-    plan_estudio_str = json.dumps(plan_estudio, separators=(',', ':'))
-    encuestas_str = json.dumps(encuestas, separators=(',', ':'))
+def modificar_plan(subject, search):
+    from services.curriculum_service import CurriculumService
+    from services.survey_service import SurveyService
+       # Instanciar el servicio de curriculum
+    curriculum_service = CurriculumService()
+    survey_service = SurveyService()
+    # Obtener el plan de estudios y las encuestas
+
+    plan_estudio_str = curriculum_service.get_curriculum(subject, "7"); 
+    encuestas_str = survey_service.get_summary_by_subject(subject);
     
     llama_payload = {
         "model": "llama3.2",

@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from services.chat_service import ChatService
 from services.llama_service import modificar_plan
 from models.plans_model import PlanModel
 from models.encuestas_model import EncuestasModel
@@ -25,13 +26,21 @@ def modificar_plan_controller():
     data = request.get_json()
     subject = data.get('subject')
     search = data.get('search')
-    plan = PlanModel().get_plan_estudio()
-    encuestas = EncuestasModel().get_encuestas_estudiantes()
+
+    print(subject, search)
     
     # Hacer la modificación del plan usando Llama
-    respuesta_llama = modificar_plan(plan, encuestas, subject, search)
+    respuesta_llama = modificar_plan(subject, search)
     
     if respuesta_llama:
+        # Crear un nuevo chat con el título basado en la materia
+        chat_title = f"Chat sobre {subject}"
+        chat_service = ChatService()
+        new_chat = chat_service.create_new_chat(chat_title)
+
+        # Guardar la respuesta de Llama como el primer mensaje del chat
+        chat_service.save_ai_response(new_chat['chat_id'], respuesta_llama)
+
         return jsonify(respuesta_llama)
     else:
         return jsonify({"error": "No se pudo modificar el plan con Llama"}), 500

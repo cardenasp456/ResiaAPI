@@ -69,6 +69,35 @@ CREATE TABLE evaluation (
     FOREIGN KEY (course_id) REFERENCES courses(course_id)
 );
 
+CREATE TABLE chats (
+    chat_id INT IDENTITY(1,1) PRIMARY KEY, -- Identificador único del chat
+    title NVARCHAR(255) NOT NULL,         -- Título del chat
+    created_at DATETIME DEFAULT GETDATE() -- Fecha de creación del chat
+);
+
+CREATE TABLE chat_messages (
+    message_id INT IDENTITY(1,1) PRIMARY KEY, -- Identificador único del mensaje
+    chat_id INT NOT NULL,                     -- Relación con el chat al que pertenece
+    sender NVARCHAR(100) NOT NULL,           -- Remitente del mensaje (usuario o sistema)
+    message_text NVARCHAR(MAX) NOT NULL,     -- Contenido del mensaje
+    sent_at DATETIME DEFAULT GETDATE(),      -- Fecha y hora del mensaje
+    FOREIGN KEY (chat_id) REFERENCES chats(chat_id) ON DELETE CASCADE -- Eliminar mensajes si se elimina el chat
+);
+
+CREATE TABLE chat_history (
+    history_id INT IDENTITY(1,1) PRIMARY KEY, -- Identificador único del historial
+    chat_id INT NOT NULL,                     -- Relación con el chat guardado
+    saved_at DATETIME DEFAULT GETDATE(),      -- Fecha en la que se guardó el historial
+    FOREIGN KEY (chat_id) REFERENCES chats(chat_id) ON DELETE CASCADE -- Eliminar historial si se elimina el chat
+);
+
+INSERT INTO chats (title) VALUES ('Chat sobre Matemáticas');
+
+INSERT INTO chat_messages (chat_id, sender, message_text)
+VALUES (1, 'Usuario', '¿Cuál es la fórmula del área de un círculo?');
+
+INSERT INTO chat_history (chat_id) VALUES (1);
+
 -- Insertar curso "Español" de grado 7
 INSERT INTO courses (course_name, grade_level)
 VALUES ('Español', '7');

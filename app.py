@@ -3,6 +3,7 @@ from flask_cors import CORS
 from database import db  # Importar la instancia de la base de datos
 from controllers.survey_controllers import survey_blueprint  # Controlador para las encuestas
 from controllers.plan_controllers import plan_blueprint  # Controlador para los planes de estudio
+from controllers.chat_controllers import chat_blueprint  # Controlador para el chat
 
 # Crear una instancia de la aplicación Flask
 app = Flask(__name__)
@@ -20,6 +21,7 @@ db.init_app(app)
 # Registrar los Blueprints
 app.register_blueprint(plan_blueprint)
 app.register_blueprint(survey_blueprint) 
+app.register_blueprint(chat_blueprint)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -91,6 +91,18 @@ class SurveyService:
 
         return averages
 
+    def get_summary_by_subject(self, subject):
+        summary = SurveySummary.query.filter_by(subject=subject).first()
+
+        if not summary:
+            return {"message": "No se encontró un resumen para la materia especificada"}, 404
+
+        # Convertir los datos a un formato serializable
+        return {
+            "subject": summary.subject,
+            "answers": json.loads(summary.answers)  # Convertir las respuestas de JSON a una lista
+        }, 200
+
 
     def delete_survey_by_id(self, survey_id):
         survey = Survey.query.filter_by(summary_id=survey_id).first()
