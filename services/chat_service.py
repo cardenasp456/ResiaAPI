@@ -27,7 +27,7 @@ class ChatService:
     
     def save_ai_response(self, chat_id, message_text):
         """
-        Guarda la respuesta de la IA en la tabla chat_messages.
+        Guarda la respuesta de la IA en la tabla chat_messages y actualiza el historial.
 
         :param chat_id: ID del chat al que pertenece la respuesta.
         :param message_text: Contenido del mensaje generado por la IA (puede ser un diccionario).
@@ -42,9 +42,14 @@ class ChatService:
             sender="IA",  # Indicar que el remitente es la IA
             message_text=message_text
         )
-
-        # Agregar el mensaje a la sesión de la base de datos
         db.session.add(ai_message)
+
+        # Verificar si el chat ya está en el historial
+        chat_history = ChatHistory.query.filter_by(chat_id=chat_id).first()
+        if not chat_history:
+            # Si no está en el historial, agregarlo
+            new_history = ChatHistory(chat_id=chat_id)
+            db.session.add(new_history)
 
         # Confirmar los cambios en la base de datos
         db.session.commit()
@@ -56,10 +61,10 @@ class ChatService:
             "message_text": ai_message.message_text,
             "sent_at": ai_message.sent_at.strftime("%Y-%m-%d %H:%M:%S")
         }
-    
+        
     def create_new_chat(self, title):
         """
-        Crea un nuevo chat en la tabla chats.
+        Crea un nuevo chat en la tabla chats y lo registra en el historial.
 
         :param title: Título del nuevo chat.
         :return: Diccionario con los detalles del chat creado.
@@ -71,8 +76,13 @@ class ChatService:
 
         # Agregar el nuevo chat a la sesión de la base de datos
         db.session.add(new_chat)
+        db.session.commit()  # Confirmar para obtener el chat_id
 
-        # Confirmar los cambios en la base de datos
+        # Crear una entrada en el historial para el nuevo chat
+        new_history = ChatHistory(
+            chat_id=new_chat.chat_id
+        )
+        db.session.add(new_history)
         db.session.commit()
 
         return {
@@ -80,3 +90,26 @@ class ChatService:
             "title": new_chat.title,
             "created_at": new_chat.created_at.strftime("%Y-%m-%d %H:%M:%S")
         }
+    
+    def get_chat_messages(self, chat_id):
+        """
+        Obtiene los mensajes de un chat específico.
+
+        :param chat_id: ID del chat cuyos mensajes se desean obtener.
+        :return: Lista de diccionarios con los mensajes del chat.
+        """
+        # Consultar los mensajes del chat
+        messages = ChatMessage.query.filter_by(chat_id=chat_id).order_by(ChatMessage.sent_at).all()
+
+        # Formatear los resultados en una lista de diccionarios
+        message_list = []
+        for message in messages:
+            message_list.append({
+                "message_id": message.message_id,
+                "chat_id": message.chat_id,
+                "sender": message.sender,
+                "message_text": message.message_text,
+                "sent_at": message.sent_at.strftime("%Y-%m-%d %H:%M:%S")
+            })
+
+        return message_list
