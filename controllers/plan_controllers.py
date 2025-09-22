@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from services.chat_service import ChatService
-from services.llama_service import modificar_plan
+from services.llama_service import modificar_plan, make_chat_title
 from models.plans_model import PlanModel
 from models.encuestas_model import EncuestasModel
 from services.curriculum_service import CurriculumService
@@ -20,30 +20,48 @@ def get_encuestas():
     encuestas = EncuestasModel().get_encuestas_estudiantes()
     return jsonify(encuestas)
 
-# Ruta para modificar el plan de estudios según las encuestas usando Llama
 @plan_blueprint.route('/api/modificar_plan', methods=['POST'])
 def modificar_plan_controller():
-    data = request.get_json()
-    subject = data.get('subject')
-    search = data.get('search')
+    try:
+        data = request.get_json(force=True) or {}
+        subject = data.get('subject')
+        search = data.get('search')
 
-    print(subject, search)
-    
-    # Hacer la modificación del plan usando Llama
-    respuesta_llama = modificar_plan(subject, search)
-    
-    if respuesta_llama:
-        # Crear un nuevo chat con el título basado en la materia
-        chat_title = f"Chat sobre {subject}"
-        chat_service = ChatService()
-        new_chat = chat_service.create_new_chat(chat_title)
+        # Log visible
+        print("RAW subject:", subject)
+        print("RAW search:", search)
 
-        # Guardar la respuesta de Llama como el primer mensaje del chat
-        chat_service.save_ai_response(new_chat['chat_id'], respuesta_llama)
+        # Normalizar tipos (defendernos de listas)
+        def to_str(x):
+            if isinstance(x, list):
+                # Une en una sola línea legible; ajusta a tu UX si prefieres bullets
+                return " | ".join(map(str, x))
+            return "" if x is None else str(x)
 
-        return jsonify(respuesta_llama)
-    else:
-        return jsonify({"error": "No se pudo modificar el plan con Llama"}), 500
+        subject_str = to_str(subject).strip()
+        search_str  = to_str(search).strip()
+
+        if not subject_str:
+            return jsonify({"error": "El campo 'subject' es obligatorio y debe ser texto."}), 400
+
+        # Llamada al servicio LLM
+        respuesta_llama = modificar_plan(subject_str, search_str)
+        print("Respuesta Llama:", respuesta_llama)
+
+        if respuesta_llama:
+            chat_title = make_chat_title(subject, search)
+            chat_service = ChatService()
+            new_chat = chat_service.create_new_chat(chat_title)
+            chat_service.save_ai_response(new_chat['chat_id'], respuesta_llama)
+            return jsonify(respuesta_llama)
+
+        return jsonify({"error": "No se pudo modificar el plan con el modelo (respuesta vacía o no válida)."}), 502
+
+    except Exception as e:
+        # No entregar 500 mudo
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": "Fallo interno en modificar_plan_controller", "detail": str(e)}), 500
     
 
 @plan_blueprint.route('/curriculum', methods=['GET'])
