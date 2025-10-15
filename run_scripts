@@ -585,3 +585,46 @@ INSERT INTO unit_resources (unit_id, resource_name) VALUES
 -- Evaluación general del curso
 INSERT INTO evaluation (course_id, exams, projects, classwork, participation) 
 VALUES (@course_id, '35%', '30%', '25%', '10%');
+
+-- dbo.student_status_tests
+IF OBJECT_ID(N'dbo.student_status_tests', N'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.student_status_tests (
+    id          INT IDENTITY(1,1) PRIMARY KEY,
+    title       NVARCHAR(200) NOT NULL,
+    grade_level NVARCHAR(10)  NOT NULL,
+    subject     NVARCHAR(80)  NOT NULL,
+    created_at  DATETIME2(0)  NOT NULL CONSTRAINT DF_student_status_tests_created_at DEFAULT (GETDATE())
+  );
+END;
+
+-- dbo.test_questions
+IF OBJECT_ID(N'dbo.test_questions', N'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.test_questions (
+    id        INT IDENTITY(1,1) PRIMARY KEY,
+    test_id   INT NOT NULL,
+    position  INT NOT NULL,
+    statement NVARCHAR(MAX) NOT NULL,
+    CONSTRAINT FK_test_questions_test
+      FOREIGN KEY (test_id) REFERENCES dbo.student_status_tests(id) ON DELETE CASCADE,
+    CONSTRAINT CK_question_position_nonnegative CHECK (position >= 0)
+  );
+  CREATE INDEX IX_test_questions_test_id ON dbo.test_questions(test_id);
+END;
+
+-- dbo.test_options
+IF OBJECT_ID(N'dbo.test_options', N'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.test_options (
+    id          INT IDENTITY(1,1) PRIMARY KEY,
+    question_id INT NOT NULL,
+    position    INT NOT NULL,
+    [text]      NVARCHAR(300) NOT NULL,
+    is_correct  BIT NOT NULL CONSTRAINT DF_test_options_is_correct DEFAULT (0),
+    CONSTRAINT FK_test_options_question
+      FOREIGN KEY (question_id) REFERENCES dbo.test_questions(id) ON DELETE CASCADE,
+    CONSTRAINT CK_option_position_bounds CHECK (position BETWEEN 0 AND 3)
+  );
+  CREATE INDEX IX_test_options_question_id ON dbo.test_options(question_id);
+END;

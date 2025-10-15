@@ -1,6 +1,13 @@
+from typing import Optional
 import requests
 import json
 import re
+import json, re, requests
+from typing import Any, Dict, List, Optional
+from sqlalchemy.orm import joinedload
+from database import db
+from models.student_status_test_model import StudentStatusTest, TestQuestion, TestOption
+from models.test_submission_model import TestSubmission
 
 # def modificar_plan(subject, search):
 #     from services.curriculum_service import CurriculumService
@@ -307,3 +314,222 @@ Datos:
         return title or _fallback_title(subject, search)
     except requests.exceptions.RequestException:
         return _fallback_title(subject, search)
+    
+
+def _extract_balanced_json(text: str) -> Optional[Dict[str, Any]]:
+    """Intenta extraer el primer bloque JSON con llaves balanceadas (por si el modelo añade ruido)."""
+    if not text:
+        return None
+    s = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip(), flags=re.IGNORECASE)
+    start = s.find("{")
+    if start == -1:
+        return None
+    stack = 0; in_str = False; esc = False; end = -1
+    for i in range(start, len(s)):
+        ch = s[i]
+        if in_str:
+            if esc: esc = False
+            elif ch == "\\": esc = True
+            elif ch == '"': in_str = False
+        else:
+            if ch == '"': in_str = True
+            elif ch == '{': stack += 1
+            elif ch == '}':
+                stack -= 1
+                if stack == 0:
+                    end = i
+                    break
+    if end == -1:
+        return None
+    candidate = s[start:end+1]
+    try:
+        return json.loads(candidate)
+    except json.JSONDecodeError:
+        candidate2 = re.sub(r",\s*([}\]])", r"\1", candidate)
+        try:
+            return json.loads(candidate2)
+        except json.JSONDecodeError:
+            return None
+
+def _clean_skills(skills: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Normaliza skills: name:str, score:int [0..100], rationale:str (opcional). Mínimo 5."""
+    out: List[Dict[str, Any]] = []
+    seen = set()
+    for s in skills or []:
+        name = str(s.get("name") or s.get("skill") or "").strip()[:60]
+        if not name:
+            continue
+        if name.lower() in seen:
+            continue
+        try:
+            score = int(round(float(s.get("score", 0))))
+        except Exception:
+            score = 0
+        score = max(0, min(100, score))
+        rationale = str(s.get("rationale") or s.get("explanation") or "")[:300]
+        out.append({"name": name, "score": score, "rationale": rationale})
+        seen.add(name.lower())
+    # garantizar mínimo 5
+    while len(out) < 5:
+        out.append({"name": f"Dimensión {len(out)+1}", "score": 0, "rationale": ""})
+    return out[:8]  # límite superior razonable
+
+def _fallback_radar(accuracy_percent: int) -> Dict[str, Any]:
+    """Por si falla Ollama: devuelve 5 dimensiones derivadas del acierto global."""
+    dims = [
+        ("Comprensión de enunciados", accuracy_percent),
+        ("Razonamiento lógico", accuracy_percent),
+        ("Cálculo/Procedimientos", accuracy_percent),
+        ("Atención al detalle", accuracy_percent),
+        ("Aplicación de conceptos", accuracy_percent),
+    ]
+    return {
+        "skills": [{"name": n, "score": int(accuracy_percent), "rationale": "Estimación por fallback"} for n, _ in dims],
+        "scale": {"min": 0, "max": 100},
+        "overall": {"score": int(accuracy_percent), "method": "fallback_mean"}
+    }
+
+def _compose_questions_payload(test: StudentStatusTest, submission: TestSubmission) -> List[Dict[str, Any]]:
+    answers_by_q = {a.question_id: int(a.chosen_index) for a in submission.answers}
+    items: List[Dict[str, Any]] = []
+    for q in sorted(test.questions, key=lambda x: x.position):
+        correct_idx = next((o.position for o in q.options if o.is_correct), None)
+        items.append({
+            "position": int(q.position),
+            "questionId": int(q.id),
+            "statement": q.statement,
+            "options": [
+                {"position": int(o.position), "text": o.text}
+                for o in sorted(q.options, key=lambda k: k.position)
+            ],
+            "correctIndex": int(correct_idx) if correct_idx is not None else None,
+            "studentIndex": answers_by_q.get(int(q.id), -1)
+        })
+    return items
+
+def build_radar_for_submission(submission_id: int) -> Dict[str, Any]:
+    """
+    Carga la submission + test, llama a Ollama y devuelve un dict:
+    { skills:[{name,score,rationale}], scale:{min,max}, overall:{score,method} }
+    """
+    sub: TestSubmission = (
+        TestSubmission.query
+        .options(db.joinedload(TestSubmission.answers))
+        .get(submission_id)
+    )
+    if not sub:
+        raise ValueError("Submission no existe.")
+
+    test: StudentStatusTest = (
+        StudentStatusTest.query
+        .options(
+            joinedload(StudentStatusTest.questions)
+            .joinedload(TestQuestion.options)
+        )
+        .get(sub.test_id)
+    )
+    if not test:
+        raise ValueError("Prueba no existe para la submission.")
+
+    q_items = _compose_questions_payload(test, sub)
+    # acierto global por si necesitamos fallback
+    acc = 0
+    total = len(q_items)
+    for i in q_items:
+        if i.get("studentIndex", -1) == i.get("correctIndex", -2):
+            acc += 1
+    accuracy_percent = int(round((acc / max(1, total)) * 100))
+
+    system_text = (
+        "Eres un asesor pedagógico. Debes analizar preguntas de una prueba y las respuestas "
+        "de un estudiante, y producir al menos 5 dimensiones (habilidades) evaluadas con puntajes 0–100."
+        " Devuelve exclusivamente JSON que cumpla el esquema."
+    )
+
+    user_payload = {
+        "subject": test.subject,
+        "grade_level": test.grade_level,
+        "questions": q_items,
+        "instructions": (
+            "Crea entre 5 y 8 dimensiones (por ejemplo: Comprensión de enunciados, Razonamiento lógico, "
+            "Cálculo/Procedimientos, Modelación, Comunicación, Atención al detalle). "
+            "Asigna a cada dimensión un puntaje 0–100 en base a las evidencias de aciertos/errores "
+            "y el contenido de los enunciados. Incluye breve justificación por dimensión."
+        )
+    }
+
+    payload_gen = {
+        "model": "qwen2.5:7b-instruct",
+        "prompt": (
+            system_text
+            + "\n\n### Datos de entrada (JSON)\n"
+            + json.dumps(user_payload, ensure_ascii=False)
+        ),
+        "system": system_text,
+        "format": {
+            "type": "object",
+            "properties": {
+                "skills": {
+                    "type": "array",
+                    "minItems": 5,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": { "type": "string", "minLength": 2 },
+                            "score": { "type": "number", "minimum": 0, "maximum": 100 },
+                            "rationale": { "type": "string" }
+                        },
+                        "required": ["name", "score"]
+                    }
+                },
+                "scale": {
+                    "type": "object",
+                    "properties": {
+                        "min": { "type": "number" },
+                        "max": { "type": "number" }
+                    }
+                },
+                "overall": {
+                    "type": "object",
+                    "properties": {
+                        "score": { "type": "number" },
+                        "method": { "type": "string" }
+                    }
+                }
+            },
+            "required": ["skills"]
+        },
+        "stream": False,
+        "options": {
+            "temperature": 0.7,
+            "num_ctx": 8192,
+            "stop": ["```"]
+        },
+        "keep_alive": 0
+    }
+
+    try:
+        r = requests.post("http://localhost:11434/api/generate", json=payload_gen, timeout=90)
+        r.raise_for_status()
+        data = r.json()
+        content = data.get("response") or ""
+        parsed = None
+        if content:
+            try:
+                parsed = json.loads(content)
+            except json.JSONDecodeError:
+                parsed = _extract_balanced_json(content)
+
+        # Normaliza y valida
+        if not parsed or not isinstance(parsed.get("skills"), list):
+            return {**_fallback_radar(accuracy_percent), "_meta": {"source": "fallback_no_json"}}
+
+        skills = _clean_skills(parsed.get("skills"))
+        overall = parsed.get("overall") or {"score": int(round(sum(s["score"] for s in skills) / len(skills))), "method": "mean_skills"}
+        scale = parsed.get("scale") or {"min": 0, "max": 100}
+
+        return {"skills": skills, "overall": overall, "scale": scale, "_meta": {"source": "ollama"}}
+
+    except Exception as e:
+        # Nunca romper el endpoint por fallas del modelo
+        return {**_fallback_radar(accuracy_percent), "_meta": {"source": "fallback_error", "detail": str(e)}}
